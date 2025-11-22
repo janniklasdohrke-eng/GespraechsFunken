@@ -1,0 +1,50 @@
+
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gesprächsfunken – Starte die Runde</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?familyisplay=swap
+  script.js</script>
+</head>
+
+
+<body class="theme-dark">
+  <div class="container">
+    <header class="hero">
+      <h1 class="brand">Gesprächs<span class="spark">funken</span></h1>
+      <p class="subtitle">Zufällige, inspirierende Fragen für deine Gesprächsrunde.</p>
+    </header>
+
+    <main class="card">
+      <h2>Los geht’s</h2>
+      <p>Standardmäßig sind alle Themen aktiviert. Du kannst sie unten optional filtern.</p>
+
+      <details class="collapsible" id="tagDetails" open>
+        <summary>
+          Tags filtern (optional)
+          <span id="selectedCount" class="badge">Alle</span>
+        </summary>
+
+        <div id="tagList" class="tag-list"></div>
+
+        <div class="tag-actions">
+          <button type="button" class="btn ghost" id="selectAllBtn">Alle auswählen</button>
+          <button type="button" class="btn ghost" id="deselectAllBtn">Alle abwählen</button>
+        </div>
+      </details>
+
+      <div class="actions">
+        <button class="btn primary" id="startBtn">Weiter</button>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <small>Made for conversation lovers ✨</small>
+    </footer>
+  </div>
+</body>
+</html>
