@@ -1,5 +1,3 @@
-
-<script>
 // --- Storage keys ---
 const STORAGE_KEYS = {
   TAGS: 'gf_tags',
@@ -211,4 +209,3 @@ document.addEventListener('DOMContentLoaded', () => {
     initQuestions();
   }
 });
-</script>
