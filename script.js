@@ -1,25 +1,10 @@
 
+<script>
 // --- Storage keys ---
 const STORAGE_KEYS = {
   TAGS: 'gf_tags',
   SHOWN: 'gf_shown',
 };
-
-// --- Fallback questions if questions.json fails ---
-const FALLBACK_QUESTIONS = [
-  { text: "Welche kleine Entscheidung hat dein Leben unerwartet beeinflusst?", tags: ["Persönlich", "Reflexion"] },
-  { text: "Welche Technologie wird in 10 Jahren völlig normal sein – und warum?", tags: ["Technologie", "Zukunft"] },
-  { text: "Was bedeutet ‚Erfolg‘ für dich heute – und wie hat sich das verändert?", tags: ["Persönlich", "Arbeit", "Reflexion"] },
-  { text: "Welche gesellschaftliche Norm würdest du am liebsten neu denken?", tags: ["Gesellschaft", "Philosophie"] },
-  { text: "Wann warst du zuletzt richtig neugierig – und was hast du daraus gemacht?", tags: ["Kreativität", "Persönlich"] },
-  { text: "Welche Alltagsgewohnheit sollte die Welt übernehmen?", tags: ["Gesellschaft", "Alltag"] },
-  { text: "Wenn du eine Frage garantiert beantwortet bekommen könntest – welche wäre das?", tags: ["Philosophie"] },
-  { text: "Welche Fähigkeit würdest du sofort meistern wollen – und weshalb?", tags: ["Kreativität", "Arbeit", "Persönlich"] },
-  { text: "Was sollte deiner Meinung nach in Schulen stärker gelehrt werden?", tags: ["Gesellschaft", "Zukunft", "Bildung"] },
-  { text: "Welche Technologie macht dir mehr Sorgen als Hoffnung?", tags: ["Technologie", "Ethik"] },
-  { text: "Was ist eine unterschätzte Freude im Alltag?", tags: ["Alltag", "Persönlich"] },
-  { text: "Welche Idee würdest du sofort prototypen, wenn du 48 Stunden Zeit hättest?", tags: ["Kreativität", "Technologie"] }
-];
 
 // --- Storage helpers ---
 function saveTags(tags) {
@@ -38,19 +23,18 @@ function saveShown(arr) {
   sessionStorage.setItem(STORAGE_KEYS.SHOWN, JSON.stringify(arr));
 }
 
-// --- Fetch questions with robust error handling ---
+// --- Fetch questions without fallback ---
 async function fetchQuestions() {
-  try {
-    const res = await fetch('questions.json', { cache: 'no-store' });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    if (!Array.isArray(data)) throw new Error('JSON ist kein Array.');
-    console.info('questions.json geladen:', data.length, 'Fragen');
-    return data;
-  } catch (err) {
-    console.warn('Fehler beim Laden von questions.json, nutze Fallback:', err);
-    return FALLBACK_QUESTIONS;
+  const res = await fetch('questions.json', { cache: 'no-store' });
+  if (!res.ok) {
+    throw new Error(`Fehler beim Laden von questions.json (HTTP ${res.status})`);
   }
+  const data = await res.json();
+  if (!Array.isArray(data)) {
+    throw new Error('Die geladene JSON ist kein Array.');
+  }
+  console.info('questions.json geladen:', data.length, 'Fragen');
+  return data;
 }
 
 // --- Helpers ---
@@ -146,8 +130,8 @@ async function initIndex() {
       window.location.href = 'questions.html';
     });
   } catch (err) {
-    console.error(err);
-    alert('Fehler beim Initialisieren. Bitte prüfe die Konsole.');
+    console.error('Initialisierung fehlgeschlagen:', err);
+    alert('Fehler beim Initialisieren. Bitte prüfe die Konsole und die Datei questions.json.');
   }
 }
 
@@ -175,6 +159,8 @@ async function initQuestions() {
     const allQuestions = await fetchQuestions();
     const selectedTags = loadTags() || getAllTagsFromQuestions(allQuestions);
     const pool = allQuestions.filter(q => q.tags && q.tags.some(t => selectedTags.includes(t)));
+
+    console.info('Fragen im aktuellen Tag-Pool:', pool.length);
 
     let shown = loadShown();
 
@@ -209,7 +195,7 @@ async function initQuestions() {
     nextQuestion();
     nextBtn.addEventListener('click', nextQuestion);
   } catch (err) {
-    console.error(err);
+    console.error('Fehler beim Laden der Fragen:', err);
     renderQuestion('Fehler beim Laden der Fragen.');
     if (status) status.textContent = 'Bitte überprüfe die Datei questions.json.';
     if (nextBtn) nextBtn.disabled = true;
@@ -224,3 +210,5 @@ document.addEventListener('DOMContentLoaded', () => {
   } else if (document.getElementById('question')) {
     initQuestions();
   }
+});
+</script>
